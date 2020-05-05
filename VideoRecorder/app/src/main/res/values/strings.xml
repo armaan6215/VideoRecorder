@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">VideoRecorder</string>
+    <string name="app_key">p3caqlfj673d0qp</string>
+    <string-array name="QUALITY_BACK">
+        <item>LOW</item>
+        <item>MEDIUM</item>
+        <item>HIGH</item>
+    </string-array>
+
+    <string-array name="QUALITY_FRONT">
+        <item>LOW</item>
+        <item>MEDIUM</item>
+    </string-array>
+</resources>
