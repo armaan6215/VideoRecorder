@@ -9,9 +9,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Editable;
 import android.text.InputFilter;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -186,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                     maxDuration.setText("Unlimited");
                     maxDurationEdit.setHint("Unlimited");
                 } else {
-                    maxDuration.setText("Set Recording Duration:   " + MAX_DURATION + "-min");
+                    maxDuration.setText("Set Recording Duration: " + MAX_DURATION + "-min");
                     maxDurationEdit.setHint("Set Recording Duration:   " + MAX_DURATION + "-min");
                 }
             }
@@ -208,14 +206,17 @@ public class MainActivity extends AppCompatActivity {
                 switch (position) {
                     case 0:
                         profile = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+                        hideView(spinner);
                         break;
 
                     case 1:
                         profile = CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
+                        hideView(spinner);
                         break;
 
                     case 2:
                         profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+                        hideView(spinner);
                         break;
                 }
             }

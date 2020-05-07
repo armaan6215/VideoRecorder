@@ -1,28 +1,26 @@
 package com.example.videorecorder;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.Toast;
-
+import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Comparator;
 
 public class ListViewActivity extends AppCompatActivity {
-    private static final int MY_PERMISSION_REQUEST = 1;
-    ArrayList<String> arrayList;
     ArrayAdapter<String> arrayAdapter;
     ListView listView;
-    String externalStorage;
+    File directory;
+    VideoView videoView;
+    String[] files;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,83 +28,55 @@ public class ListViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_view);
         listView = (ListView) findViewById(R.id.listView);
         doStuff();
+        videoView = (VideoView) findViewById(R.id.video_view);
 
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                videoView.setVisibility(View.INVISIBLE);
+                listView.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     public void doStuff() {
-        externalStorage = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "VideoRecorder");
-        String[] files = directory.list();
-        if (files == null) {
-
-        } else {
-            arrayList = new ArrayList<>();
+        directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "VideoRecorder");
+        files = directory.list();
+        if (files != null) {
             arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, files);
+            arrayAdapter.sort(new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return o2.compareTo(o1);
+                }
+            });
             listView.setAdapter(arrayAdapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    listView.setVisibility(View.GONE);
+                    videoView.setVisibility(View.VISIBLE);
+                    String filePosition = files[position];
+                    String filepath = directory.getPath() + "/" + filePosition;
+                    videoPlay(filepath);
+                    Toast.makeText(getApplicationContext(), "Playing " + filePosition, Toast.LENGTH_LONG).show();
                 }
             });
         }
     }
 
-    public static class CreatePasswordActivity extends AppCompatActivity {
+    public void videoPlay(String videoPath) {
+        Uri uri = Uri.parse(videoPath);
+        videoView.setVideoURI(uri);
+        MediaController mediaController = new MediaController(ListViewActivity.this);
+        videoView.setMediaController(mediaController);
+        mediaController.setAnchorView(videoView);
+        videoView.start();
+    }
 
-        EditText editText1, editText2, oldPassword;
-        Button button, hide;
-        String oldPass;
-
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_create_password);
-
-            editText1 = (EditText) findViewById(R.id.editText1);
-            editText2 = (EditText) findViewById(R.id.editText2);
-            oldPassword = (EditText) findViewById(R.id.oldPassword);
-            button = (Button) findViewById(R.id.button);
-            hide = (Button) findViewById(R.id.hide);
-
-            final SharedPreferences settings = getSharedPreferences("PREFS", 0);
-            oldPass = settings.getString("password", "");
-
-            if (oldPass.equals("")) {
-                oldPassword.setVisibility(View.INVISIBLE);
-            }
-
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String text1 = editText1.getText().toString();
-                        String text2 = editText2.getText().toString();
-                        String text3 = oldPassword.getText().toString();
-
-                        if(!oldPass.equals("") && !oldPass.equals(text3)){
-                            Toast.makeText(CreatePasswordActivity.this, "Old Password Incorrect", Toast.LENGTH_LONG).show();
-                        }
-
-                        else if (text1.equals("") || text2.equals("")) {
-                            Toast.makeText(CreatePasswordActivity.this, "Password not entered", Toast.LENGTH_SHORT).show();
-                        } else if (text1.equals(text2)) {
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putString("password", text1);
-                            editor.apply();
-
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intent);
-                            finish();
-
-                        } else {
-                            Toast.makeText(CreatePasswordActivity.this, "Password does'nt match", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
-            }
+    public void getFilePath(int i) {
 
         }
-}
+    }
 

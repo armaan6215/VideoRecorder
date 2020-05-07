@@ -71,7 +71,7 @@ public class EnterPasswordActivity extends AppCompatActivity {
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), ListViewActivity.CreatePasswordActivity.class);
+                Intent i = new Intent(getApplicationContext(), CreatePasswordActivity.class);
                 startActivity(i);
                 finish();
             }
